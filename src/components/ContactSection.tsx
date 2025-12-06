@@ -1,5 +1,5 @@
-import { Github, Linkedin, Mail, MapPin, Phone, Send } from "lucide-react";
-import { Button } from "./ui/button";
+import { Github, Linkedin, Mail, MapPin, Phone } from "lucide-react";
+import { ContactForm } from "./ContactForm";
 
 export const ContactSection = () => {
   return (
@@ -15,13 +15,13 @@ export const ContactSection = () => {
       <div className="container mx-auto px-6 relative z-10">
         {/* Section Header */}
         <div className="flex items-center gap-4 mb-16">
-          <span className="text-primary font-mono text-sm">05</span>
+          <span className="text-primary font-mono text-sm">07</span>
           <h2 className="text-4xl md:text-5xl font-bold">Contact</h2>
           <div className="flex-1 h-[2px] bg-gradient-to-r from-primary/50 to-transparent" />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-16">
-          {/* Left - CTA */}
+          {/* Left - Info */}
           <div className="space-y-8">
             <div className="space-y-4">
               <h3 className="text-3xl md:text-4xl font-bold">
@@ -29,7 +29,7 @@ export const ContactSection = () => {
                 <span className="text-gradient">Extraordinary</span>
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Whether you need a full-stack solution, performance optimization, or technical consultation, let's connect.
+                I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Fill out the form and I'll get back to you within 24 hours.
               </p>
             </div>
 
@@ -61,7 +61,7 @@ export const ContactSection = () => {
                 </div>
               </a>
 
-              <div className="group flex items-center gap-4 p-4 bg-card border-2 border-border">
+              <div className="flex items-center gap-4 p-4 bg-card border-2 border-border">
                 <div className="w-12 h-12 bg-accent/10 flex items-center justify-center">
                   <MapPin className="text-accent" size={24} />
                 </div>
@@ -93,30 +93,10 @@ export const ContactSection = () => {
             </div>
           </div>
 
-          {/* Right - Visual Element */}
-          <div className="relative flex items-center justify-center">
-            <div className="relative w-full max-w-md aspect-square">
-              {/* Animated Rings */}
-              <div className="absolute inset-0 border-2 border-primary/20 animate-pulse" style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
-              <div className="absolute inset-8 border-2 border-secondary/20 animate-pulse" style={{ animationDelay: "0.5s", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
-              <div className="absolute inset-16 border-2 border-accent/20 animate-pulse" style={{ animationDelay: "1s", clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }} />
-              
-              {/* Center Content */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="w-20 h-20 mx-auto bg-primary/20 border-2 border-primary flex items-center justify-center animate-float">
-                    <Send size={32} className="text-primary" />
-                  </div>
-                  <p className="font-mono text-sm text-muted-foreground">Ready to Connect</p>
-                </div>
-              </div>
-
-              {/* Decorative Dots */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary" />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-4 h-4 bg-secondary" />
-              <div className="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-accent" />
-              <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-primary" />
-            </div>
+          {/* Right - Contact Form */}
+          <div className="bg-card border-2 border-border p-6 md:p-8">
+            <h4 className="text-xl font-bold mb-6">Send a Message</h4>
+            <ContactForm />
           </div>
         </div>
       </div>

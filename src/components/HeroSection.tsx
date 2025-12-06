@@ -1,19 +1,25 @@
-import { ArrowDown, Github, Linkedin, Mail, Phone } from "lucide-react";
+import { ArrowDown, Github, Linkedin, Mail, Phone, Download } from "lucide-react";
 import { Button } from "./ui/button";
+import { Hero3D } from "./Hero3D";
+import { trackEvent } from "@/lib/analytics";
 
 export const HeroSection = () => {
+  const handleDownloadCV = () => {
+    trackEvent("cv_download", { source: "hero" });
+    window.open("/Apoorv_Mishra_CV.pdf", "_blank");
+  };
+
   return (
     <section id="home" className="min-h-screen relative overflow-hidden flex items-center">
-      {/* Animated Background Grid */}
-      <div className="absolute inset-0 bg-grid opacity-30" />
+      {/* 3D Background */}
+      <Hero3D />
       
-      {/* Floating Shapes */}
-      <div className="absolute top-20 right-10 w-72 h-72 bg-primary/10 blur-3xl animate-float" />
-      <div className="absolute bottom-20 left-10 w-96 h-96 bg-secondary/10 blur-3xl animate-float" style={{ animationDelay: "-3s" }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 blur-3xl" />
+      {/* Gradient Overlays for readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent z-[1]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50 z-[1]" />
       
       {/* Diagonal Lines Decoration */}
-      <div className="absolute top-0 right-0 w-1/3 h-full opacity-20">
+      <div className="absolute top-0 right-0 w-1/3 h-full opacity-10 z-[2]">
         <div className="absolute top-0 right-0 w-full h-full">
           {[...Array(8)].map((_, i) => (
             <div
@@ -75,7 +81,11 @@ export const HeroSection = () => {
               <Button variant="hero" asChild>
                 <a href="#projects">View Projects</a>
               </Button>
-              <Button variant="outline" size="lg" asChild>
+              <Button variant="outline" size="lg" onClick={handleDownloadCV}>
+                <Download size={18} />
+                Download CV
+              </Button>
+              <Button variant="secondary" size="lg" asChild>
                 <a href="#contact">Get in Touch</a>
               </Button>
             </div>
@@ -87,6 +97,7 @@ export const HeroSection = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => trackEvent("social_click", { platform: "github" })}
               >
                 <Github size={20} className="group-hover:animate-pulse" />
                 <span className="text-sm font-mono hidden sm:inline">GitHub</span>
@@ -96,6 +107,7 @@ export const HeroSection = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 text-muted-foreground hover:text-secondary transition-colors"
+                onClick={() => trackEvent("social_click", { platform: "linkedin" })}
               >
                 <Linkedin size={20} className="group-hover:animate-pulse" />
                 <span className="text-sm font-mono hidden sm:inline">LinkedIn</span>
@@ -103,6 +115,7 @@ export const HeroSection = () => {
               <a
                 href="mailto:mishraapoorv14@gmail.com"
                 className="group flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors"
+                onClick={() => trackEvent("social_click", { platform: "email" })}
               >
                 <Mail size={20} className="group-hover:animate-pulse" />
                 <span className="text-sm font-mono hidden sm:inline">Email</span>
@@ -110,6 +123,7 @@ export const HeroSection = () => {
               <a
                 href="tel:+919508103499"
                 className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                onClick={() => trackEvent("social_click", { platform: "phone" })}
               >
                 <Phone size={20} className="group-hover:animate-pulse" />
                 <span className="text-sm font-mono hidden sm:inline">Call</span>
@@ -117,29 +131,24 @@ export const HeroSection = () => {
             </div>
           </div>
 
-          {/* Right Visual Element */}
-          <div className="lg:col-span-5 hidden lg:flex items-center justify-center">
-            <div className="relative">
-              {/* Abstract Shape */}
-              <div className="w-80 h-80 border-2 border-primary/30 rotate-45 relative">
-                <div className="absolute inset-4 border-2 border-secondary/30" />
-                <div className="absolute inset-8 border-2 border-accent/30" />
-                <div className="absolute inset-12 bg-gradient-to-br from-primary/10 to-secondary/10" />
-                
-                {/* Floating Stats */}
-                <div className="absolute -top-16 -right-16 rotate-[-45deg] bg-card border-2 border-primary p-4 shadow-brutal">
-                  <p className="text-3xl font-bold text-primary">50%</p>
-                  <p className="text-xs font-mono text-muted-foreground">DB Response ↓</p>
-                </div>
-                
-                <div className="absolute -bottom-16 -left-16 rotate-[-45deg] bg-card border-2 border-secondary p-4 shadow-brutal-cyan">
-                  <p className="text-3xl font-bold text-secondary">10K+</p>
-                  <p className="text-xs font-mono text-muted-foreground">TXN/min</p>
-                </div>
+          {/* Right - Stats floating over 3D */}
+          <div className="lg:col-span-5 hidden lg:flex items-center justify-center relative">
+            <div className="relative w-80 h-80">
+              {/* Floating Stats */}
+              <div className="absolute -top-8 right-0 bg-card/90 backdrop-blur-sm border-2 border-primary p-4 shadow-brutal animate-float z-10">
+                <p className="text-3xl font-bold text-primary">50%</p>
+                <p className="text-xs font-mono text-muted-foreground">DB Response ↓</p>
               </div>
               
-              {/* Decorative Circle */}
-              <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 border border-dashed border-primary/20 rounded-full animate-spin" style={{ animationDuration: "30s" }} />
+              <div className="absolute bottom-0 -left-8 bg-card/90 backdrop-blur-sm border-2 border-secondary p-4 shadow-brutal-cyan animate-float z-10" style={{ animationDelay: "-2s" }}>
+                <p className="text-3xl font-bold text-secondary">10K+</p>
+                <p className="text-xs font-mono text-muted-foreground">TXN/min</p>
+              </div>
+
+              <div className="absolute top-1/2 -right-4 bg-card/90 backdrop-blur-sm border-2 border-accent p-4 animate-float z-10" style={{ animationDelay: "-4s" }}>
+                <p className="text-3xl font-bold text-accent">3+</p>
+                <p className="text-xs font-mono text-muted-foreground">Years Exp</p>
+              </div>
             </div>
           </div>
         </div>
