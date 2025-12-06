@@ -49,17 +49,18 @@ const experiences = [
 ];
 
 export const ExperienceSection = () => {
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<Array<{ url: string; author?: string; authorUrl?: string; photoUrl?: string }>>([]);
 
   useEffect(() => {
     (async () => {
       try {
         const cfg = await getAppConfig();
         const hasKey = !!cfg.unsplash?.accessKey;
+        const appName = "apoorv-mishra-portfolio";
         const list = await Promise.all(
           experiences.map(async (exp) => {
             const sig = Math.random().toString(36).slice(2);
-            const keywords = encodeURIComponent(`${exp.tags}`);
+            const keywords = encodeURIComponent(`${exp.company} ${exp.title}`);
             if (hasKey) {
               try {
                 const url = `https://api.unsplash.com/search/photos?query=${keywords}&orientation=landscape&per_page=30&client_id=${cfg.unsplash!.accessKey}`;
@@ -68,11 +69,24 @@ export const ExperienceSection = () => {
                 const results = Array.isArray(data.results) ? data.results : [];
                 if (results.length) {
                   const pick = results[Math.floor(Math.random() * results.length)];
-                  if (pick?.urls?.regular) return `${pick.urls.regular}?sig=${sig}`;
+                  if (pick?.urls?.regular) {
+                    const author = pick.user?.name || undefined;
+                    const authorUrl = pick.user?.links?.html
+                      ? `${pick.user.links.html}?utm_source=${appName}&utm_medium=referral`
+                      : undefined;
+                    const photoUrl = pick.links?.html
+                      ? `${pick.links.html}?utm_source=${appName}&utm_medium=referral`
+                      : undefined;
+                    const dl = pick.links?.download_location;
+                    if (dl) {
+                      fetch(`${dl}&client_id=${cfg.unsplash!.accessKey}`).catch(() => {});
+                    }
+                    return { url: `${pick.urls.regular}?sig=${sig}`, author, authorUrl, photoUrl };
+                  }
                 }
               } catch {}
             }
-            return `https://picsum.photos/800/600?random=${sig}`;
+            return { url: `https://picsum.photos/800/600?random=${sig}` };
           }),
         );
         setImages(list);
@@ -108,13 +122,22 @@ export const ExperienceSection = () => {
               }`}
             >
               {(() => {
-                const imgUrl = images[index] || `https://picsum.photos/800/600?random=${index}`;
+                const item = images[index];
+                const imgUrl = item?.url || `https://picsum.photos/800/600?random=${index}`;
                 return (
                   <div
                     className={`absolute top-0 hidden md:block ${index % 2 === 0 ? "right-0" : "left-0"} w-[45%] h-full`}
                   >
                     <div className="h-full border-2 border-border bg-card overflow-hidden">
                       <img src={imgUrl} alt={`${exp.company} ${exp.title}`} className="w-full h-full object-cover" loading="lazy" />
+                      {item?.author && item?.authorUrl && (
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 flex gap-1">
+                          <span>Photo by</span>
+                          <a href={item.authorUrl} target="_blank" rel="noopener noreferrer" className="underline">{item.author}</a>
+                          <span>on</span>
+                          <a href={`https://unsplash.com/?utm_source=apoorv-mishra-portfolio&utm_medium=referral`} target="_blank" rel="noopener noreferrer" className="underline">Unsplash</a>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -135,10 +158,19 @@ export const ExperienceSection = () => {
               >
                 <div className="md:hidden mb-4">
                   {(() => {
-                    const imgUrl = images[index] || `https://picsum.photos/800/600?random=${index}`;
+                    const item = images[index];
+                    const imgUrl = item?.url || `https://picsum.photos/800/600?random=${index}`;
                     return (
-                      <div className="w-full h-40 border-2 border-border bg-card overflow-hidden">
+                      <div className="w-full h-40 border-2 border-border bg-card overflow-hidden relative">
                         <img src={imgUrl} alt={`${exp.company} ${exp.title}`} className="w-full h-full object-cover" loading="lazy" />
+                        {item?.author && item?.authorUrl && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-2 py-1 flex gap-1">
+                            <span>Photo by</span>
+                            <a href={item.authorUrl} target="_blank" rel="noopener noreferrer" className="underline">{item.author}</a>
+                            <span>on</span>
+                            <a href={`https://unsplash.com/?utm_source=apoorv-mishra-portfolio&utm_medium=referral`} target="_blank" rel="noopener noreferrer" className="underline">Unsplash</a>
+                          </div>
+                        )}
                       </div>
                     );
                   })()}

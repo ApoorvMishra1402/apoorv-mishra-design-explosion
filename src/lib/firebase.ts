@@ -10,7 +10,7 @@ export async function getDb() {
   const app = getApps().length ? getApps()[0] : initializeApp(cfg.firebase);
   _db = initializeFirestore(app, {
     experimentalForceLongPolling: true,
-    useFetchStreams: false,
+ 
   });
   return _db;
 }
