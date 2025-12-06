@@ -60,7 +60,7 @@ export const ExperienceSection = () => {
         const list = await Promise.all(
           experiences.map(async (exp) => {
             const sig = Math.random().toString(36).slice(2);
-            const keywords = encodeURIComponent(`${exp.company} ${exp.title}`);
+            const keywords = encodeURIComponent(`${exp.tags}`);
             if (hasKey) {
               try {
                 const url = `https://api.unsplash.com/search/photos?query=${keywords}&orientation=landscape&per_page=30&client_id=${cfg.unsplash!.accessKey}`;
