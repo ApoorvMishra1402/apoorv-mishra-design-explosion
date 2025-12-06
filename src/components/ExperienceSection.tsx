@@ -1,10 +1,13 @@
 import { Briefcase, Calendar, MapPin } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getAppConfig } from "@/lib/appConfig";
 
 const experiences = [
   {
     title: "Associate Software Developer",
-    company: "Medical Technology Company",
-    location: "Remote",
+    company: "TrioTree Technologies",
+    tags:"Healthcare Software",
+    location: "Noida, Uttar Pradesh",
     period: "April 2025 – November 2025",
     highlights: [
       "Developed and maintained 3+ healthcare applications, leading to a 20% faster turnaround time for new feature requests",
@@ -18,6 +21,7 @@ const experiences = [
   {
     title: "Full Stack Developer Intern",
     company: "Wealthcore",
+    tags:"Fintech Software",
     location: "Remote",
     period: "December 2023 – February 2025",
     highlights: [
@@ -32,6 +36,7 @@ const experiences = [
   {
     title: "UI/UX Designer and Developer",
     company: "IQuestStar",
+    tags:"EduTech Software",
     location: "Gurugram, Delhi",
     period: "April 2022 – July 2022",
     highlights: [
@@ -44,6 +49,39 @@ const experiences = [
 ];
 
 export const ExperienceSection = () => {
+  const [images, setImages] = useState<string[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const cfg = await getAppConfig();
+        const hasKey = !!cfg.unsplash?.accessKey;
+        const list = await Promise.all(
+          experiences.map(async (exp) => {
+            const sig = Math.random().toString(36).slice(2);
+            const keywords = encodeURIComponent(`${exp.tags}`);
+            if (hasKey) {
+              try {
+                const url = `https://api.unsplash.com/search/photos?query=${keywords}&orientation=landscape&per_page=30&client_id=${cfg.unsplash!.accessKey}`;
+                const res = await fetch(url);
+                const data = await res.json();
+                const results = Array.isArray(data.results) ? data.results : [];
+                if (results.length) {
+                  const pick = results[Math.floor(Math.random() * results.length)];
+                  if (pick?.urls?.regular) return `${pick.urls.regular}?sig=${sig}`;
+                }
+              } catch {}
+            }
+            return `https://picsum.photos/800/600?random=${sig}`;
+          }),
+        );
+        setImages(list);
+      } catch {
+        setImages([]);
+      }
+    })();
+  }, []);
+
   return (
     <section id="experience" className="py-32 relative overflow-hidden">
       {/* Background Elements */}
@@ -69,6 +107,18 @@ export const ExperienceSection = () => {
                 index % 2 === 0 ? "md:pr-[55%]" : "md:pl-[55%] md:text-left"
               }`}
             >
+              {(() => {
+                const imgUrl = images[index] || `https://picsum.photos/800/600?random=${index}`;
+                return (
+                  <div
+                    className={`absolute top-0 hidden md:block ${index % 2 === 0 ? "right-0" : "left-0"} w-[45%] h-full`}
+                  >
+                    <div className="h-full border-2 border-border bg-card overflow-hidden">
+                      <img src={imgUrl} alt={`${exp.company} ${exp.title}`} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  </div>
+                );
+              })()}
               {/* Timeline Dot */}
               <div
                 className={`absolute left-0 md:left-1/2 w-4 h-4 -translate-x-[7px] md:-translate-x-1/2 bg-${exp.color} border-2 border-background z-10`}
@@ -77,13 +127,22 @@ export const ExperienceSection = () => {
                 }}
               />
 
-              {/* Content Card */}
               <div
                 className={`ml-8 md:ml-0 bg-card border-2 border-${exp.color}/30 p-6 md:p-8 hover-lift group`}
                 style={{
                   clipPath: "polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px))",
                 }}
               >
+                <div className="md:hidden mb-4">
+                  {(() => {
+                    const imgUrl = images[index] || `https://picsum.photos/800/600?random=${index}`;
+                    return (
+                      <div className="w-full h-40 border-2 border-border bg-card overflow-hidden">
+                        <img src={imgUrl} alt={`${exp.company} ${exp.title}`} className="w-full h-full object-cover" loading="lazy" />
+                      </div>
+                    );
+                  })()}
+                </div>
                 {/* Header */}
                 <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
                   <div>

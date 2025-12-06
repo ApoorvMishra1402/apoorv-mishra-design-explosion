@@ -3,6 +3,10 @@ import { Send, Loader2, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import { z } from "zod";
 import { toast } from "@/hooks/use-toast";
+import { getDb } from "@/lib/firebase";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import emailjs from "@emailjs/browser";
+import { getAppConfig } from "@/lib/appConfig";
 
 const contactSchema = z.object({
   name: z
@@ -63,31 +67,47 @@ export const ContactForm = () => {
     setStatus("loading");
 
     try {
-      // Using Formspree - replace with your form ID
-      const response = await fetch("https://formspree.io/f/xpwzgvkq", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          message: formData.message,
-        }),
+      const db = await getDb();
+      const addDocPromise = addDoc(collection(db, "messages"), {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        createdAt: serverTimestamp(),
       });
 
-      if (response.ok) {
-        setStatus("success");
-        setFormData({ name: "", email: "", message: "" });
-        toast({
-          title: "Message sent!",
-          description: "Thank you for reaching out. I'll get back to you soon!",
-        });
-        // Reset status after 3 seconds
-        setTimeout(() => setStatus("idle"), 3000);
-      } else {
-        throw new Error("Failed to send");
+      const cfg = await getAppConfig();
+      const cvUrl = new URL("/Apoorv_Mishra_CV.pdf", window.location.origin).toString();
+
+      let messageId = "";
+      try {
+        const TIMEOUT_MS = 15000;
+        const docRef: any = await Promise.race([
+          addDocPromise,
+          new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), TIMEOUT_MS)),
+        ]);
+        if (docRef && docRef.id) messageId = docRef.id;
+      } catch (_) {}
+
+      if (cfg.emailjs) {
+        try {
+          await emailjs.send(cfg.emailjs.serviceId, cfg.emailjs.templateId, {
+            to_email: formData.email,
+            to_name: formData.name,
+            cv_url: cvUrl,
+            message_id: messageId || "N/A",
+          });
+        } catch (err: any) {
+          console.error("EmailJS send failed", err);
+        }
       }
+
+      setStatus("success");
+      setFormData({ name: "", email: "", message: "" });
+      toast({
+        title: "Message sent!",
+        description: "Thank you for reaching out. I'll get back to you soon!",
+      });
+      setTimeout(() => setStatus("idle"), 3000);
     } catch (error) {
       setStatus("error");
       toast({

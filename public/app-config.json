@@ -1,0 +1,18 @@
+{
+  "firebase": {
+    "apiKey": "AIzaSyC4UvWIhIp8D-vzQq6wZIjs8V2-LiiBbNo",
+    "authDomain": "portfolio-8a178.firebaseapp.com",
+    "projectId": "portfolio-8a178",
+    "storageBucket": "portfolio-8a178.firebasestorage.app",
+    "messagingSenderId": "423077552890",
+    "appId": "1:423077552890:web:669fb180c8576709c11f43"
+  },
+  "emailjs": {
+    "serviceId": "service_eiifdkx",
+    "templateId": "template_3st905y",
+    "publicKey": "uZ3xrdSJ5Tos3tuS5"
+  },
+  "unsplash": {
+    "accessKey": "GrhhxoGXkzoAAXhl0NkQvvEOUFjyN879X3GdvpbeBMc"
+  }
+}

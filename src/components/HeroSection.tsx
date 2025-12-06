@@ -146,7 +146,7 @@ export const HeroSection = () => {
               </div>
 
               <div className="absolute top-1/2 -right-4 bg-card/90 backdrop-blur-sm border-2 border-accent p-4 animate-float z-10" style={{ animationDelay: "-4s" }}>
-                <p className="text-3xl font-bold text-accent">3+</p>
+                <p className="text-3xl font-bold text-accent">1.5+</p>
                 <p className="text-xs font-mono text-muted-foreground">Years Exp</p>
               </div>
             </div>

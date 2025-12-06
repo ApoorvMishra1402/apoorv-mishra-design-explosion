@@ -1,48 +1,19 @@
 import { ArrowRight, Calendar, Clock, Tag } from "lucide-react";
 import { Button } from "./ui/button";
+import { useEffect, useState } from "react";
+import { getDb } from "@/lib/firebase";
+import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
-const blogPosts = [
-  {
-    id: 1,
-    title: "Building High-Performance Trading Systems with Node.js",
-    excerpt:
-      "Lessons learned from architecting a multi-asset trading application that processes over 10,000 transactions per minute with sub-100ms latency.",
-    date: "2024-11-15",
-    readTime: "8 min read",
-    tags: ["Node.js", "Performance", "Architecture"],
-    color: "primary",
-  },
-  {
-    id: 2,
-    title: "Database Optimization: From 500ms to 50ms Query Times",
-    excerpt:
-      "A deep dive into SQL Server stored procedure optimization techniques that helped us achieve a 90% reduction in database response times.",
-    date: "2024-10-22",
-    readTime: "12 min read",
-    tags: ["SQL", "Optimization", "Performance"],
-    color: "secondary",
-  },
-  {
-    id: 3,
-    title: "Cross-Platform Mobile Development with React Native",
-    excerpt:
-      "How we built a healthcare app that reduced chart retrieval time by 60% while maintaining HIPAA compliance across iOS and Android.",
-    date: "2024-09-18",
-    readTime: "10 min read",
-    tags: ["React Native", "Mobile", "Healthcare"],
-    color: "accent",
-  },
-  {
-    id: 4,
-    title: "Real-Time Data Pipelines with Apache Kafka",
-    excerpt:
-      "Building a recommendation system that processes 1M+ entries and generates personalized suggestions in under 500ms using Kafka streams.",
-    date: "2024-08-05",
-    readTime: "15 min read",
-    tags: ["Kafka", "Spark", "Big Data"],
-    color: "primary",
-  },
-];
+type BlogCard = {
+  id: string;
+  title: string;
+  excerpt: string;
+  date: string;
+  readTime?: string;
+  tags: string[];
+  color?: string;
+};
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
@@ -54,10 +25,36 @@ const formatDate = (dateStr: string) => {
 };
 
 export const BlogSection = () => {
-  const handleReadMore = (postId: number) => {
-    // Scroll to top and show toast - in a real app, this would navigate to the blog post
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    alert(`Blog post ${postId} - Full article coming soon! This portfolio demonstrates the blog structure.`);
+  const [posts, setPosts] = useState<BlogCard[]>([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const db = await getDb();
+        const q = query(collection(db, "blogs"), orderBy("date", "desc"));
+        const snaps = await getDocs(q);
+        const list: BlogCard[] = snaps.docs.map((d) => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            title: data.title,
+            excerpt: data.excerpt,
+            date: data.date,
+            readTime: data.readTime || "",
+            tags: data.tags || [],
+            color: data.color || "primary",
+          };
+        });
+        setPosts(list);
+      } catch (_) {
+        setPosts([]);
+      }
+    })();
+  }, []);
+
+  const handleReadMore = (postId: string) => {
+    navigate(`/blog/${postId}`);
   };
 
   return (
@@ -75,7 +72,7 @@ export const BlogSection = () => {
 
         {/* Blog Grid */}
         <div className="grid md:grid-cols-2 gap-8">
-          {blogPosts.map((post, index) => (
+          {posts.map((post, index) => (
             <article
               key={post.id}
               className="group relative bg-card border-2 border-border hover:border-primary/50 p-6 md:p-8 transition-all duration-300 hover-lift"
