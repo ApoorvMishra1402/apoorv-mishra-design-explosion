@@ -6,7 +6,7 @@ const experiences = [
   {
     title: "Associate Software Developer",
     company: "TrioTree Technologies",
-    tags:"HealtTech Software",
+    tags: "healthcare technology hospital software",
     location: "Noida, Uttar Pradesh",
     period: "April 2025 – November 2025",
     highlights: [
@@ -21,7 +21,7 @@ const experiences = [
   {
     title: "Full Stack Developer Intern",
     company: "Wealthcore",
-    tags:"Fintech Software",
+    tags:"Fintech trading platform microservices",
     location: "Remote",
     period: "December 2023 – February 2025",
     highlights: [
@@ -36,7 +36,7 @@ const experiences = [
   {
     title: "UI/UX Designer and Developer",
     company: "IQuestStar",
-    tags:"Education Software",
+    tags:"UI/UX Design",
     location: "Gurugram, Delhi",
     period: "April 2022 – July 2022",
     highlights: [
