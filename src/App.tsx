@@ -36,7 +36,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename="/apoorv-mishra-design-explosion/">
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/blog/:id" element={<BlogDetail />} />
