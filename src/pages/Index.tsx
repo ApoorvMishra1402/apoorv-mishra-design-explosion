@@ -3,11 +3,19 @@ import { HeroSection } from "@/components/HeroSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
 import { ProjectsSection } from "@/components/ProjectsSection";
 import { SkillsSection } from "@/components/SkillsSection";
+import { BlogSection } from "@/components/BlogSection";
 import { ContactSection } from "@/components/ContactSection";
 import { Footer } from "@/components/Footer";
+import { CustomCursor } from "@/components/CustomCursor";
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
+import { trackPageView } from "@/lib/analytics";
 
 const Index = () => {
+  useEffect(() => {
+    trackPageView("home");
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -24,6 +32,9 @@ const Index = () => {
       </Helmet>
       
       <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+        {/* Custom Cursor */}
+        <CustomCursor />
+        
         {/* Noise Overlay */}
         <div className="fixed inset-0 pointer-events-none bg-noise z-50" />
         
@@ -33,6 +44,7 @@ const Index = () => {
           <ExperienceSection />
           <ProjectsSection />
           <SkillsSection />
+          <BlogSection />
           <ContactSection />
         </main>
         <Footer />

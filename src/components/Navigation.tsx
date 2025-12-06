@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Download } from "lucide-react";
 import { Button } from "./ui/button";
+import { ThemeToggle } from "./ThemeToggle";
+import { trackEvent } from "@/lib/analytics";
 
 const navItems = [
   { label: "Home", href: "#home" },
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
   { label: "Skills", href: "#skills" },
+  { label: "Blog", href: "#blog" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -21,6 +24,11 @@ export const Navigation = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleDownloadCV = () => {
+    trackEvent("cv_download", { source: "navigation" });
+    window.open("/Apoorv_Mishra_CV.pdf", "_blank");
+  };
 
   return (
     <nav
@@ -39,7 +47,7 @@ export const Navigation = () => {
           </a>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden lg:flex items-center gap-6">
             {navItems.map((item) => (
               <a
                 key={item.label}
@@ -52,26 +60,39 @@ export const Navigation = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* Right Actions */}
+          <div className="hidden md:flex items-center gap-3">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleDownloadCV}
+              className="border-2 border-border hover:border-secondary/50"
+            >
+              <Download size={16} />
+              CV
+            </Button>
             <Button variant="outline" size="sm" asChild>
               <a href="#contact">Let's Talk</a>
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-foreground hover:text-primary transition-colors"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="text-foreground hover:text-primary transition-colors p-2"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         <div
-          className={`md:hidden overflow-hidden transition-all duration-500 ${
-            isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+          className={`lg:hidden overflow-hidden transition-all duration-500 ${
+            isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
           <div className="py-6 border-t border-border/50 space-y-4">
@@ -81,15 +102,20 @@ export const Navigation = () => {
                 href={item.href}
                 onClick={() => setIsOpen(false)}
                 className="block text-lg font-medium text-muted-foreground hover:text-primary transition-colors duration-300 uppercase tracking-wider"
-                style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <span className="text-primary font-mono text-sm mr-2">0{index + 1}</span>
                 {item.label}
               </a>
             ))}
-            <Button variant="outline" className="w-full mt-4" asChild>
-              <a href="#contact">Let's Talk</a>
-            </Button>
+            <div className="flex gap-3 pt-4">
+              <Button variant="ghost" size="sm" onClick={handleDownloadCV} className="flex-1">
+                <Download size={16} />
+                Download CV
+              </Button>
+              <Button variant="outline" className="flex-1" asChild>
+                <a href="#contact">Let's Talk</a>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
