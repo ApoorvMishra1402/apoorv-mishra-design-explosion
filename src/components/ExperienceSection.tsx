@@ -6,7 +6,7 @@ const experiences = [
   {
     title: "Associate Software Developer",
     company: "TrioTree Technologies",
-    tags:"Healthcare Software",
+    tags:"HealtTech Software",
     location: "Noida, Uttar Pradesh",
     period: "April 2025 – November 2025",
     highlights: [
@@ -36,7 +36,7 @@ const experiences = [
   {
     title: "UI/UX Designer and Developer",
     company: "IQuestStar",
-    tags:"EduTech Software",
+    tags:"Education Software",
     location: "Gurugram, Delhi",
     period: "April 2022 – July 2022",
     highlights: [
