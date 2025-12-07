@@ -6,7 +6,7 @@ import { trackEvent } from "@/lib/analytics";
 export const HeroSection = () => {
   const handleDownloadCV = () => {
     trackEvent("cv_download", { source: "hero" });
-    window.open("/Apoorv_Mishra_CV.pdf", "_blank");
+    window.open("/apoorv-mishra-design-explosion/Apoorv_Mishra_CV.pdf", "_blank");
   };
 
   return (
