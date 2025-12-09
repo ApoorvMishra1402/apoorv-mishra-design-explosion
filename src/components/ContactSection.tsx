@@ -75,7 +75,7 @@ export const ContactSection = () => {
             {/* Social Links */}
             <div className="flex gap-4">
               <a
-                href="https://github.com/apoorvmishra14"
+                href="https://github.com/ApoorvMishra1402"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-14 h-14 bg-card border-2 border-border hover:border-primary hover:bg-primary/10 flex items-center justify-center transition-all hover-lift"
@@ -83,7 +83,7 @@ export const ContactSection = () => {
                 <Github size={24} className="text-muted-foreground hover:text-primary" />
               </a>
               <a
-                href="https://linkedin.com/in/ApoorvMishra1402"
+                href="https://linkedin.com/in/ApoorvMishra1402/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-14 h-14 bg-card border-2 border-border hover:border-secondary hover:bg-secondary/10 flex items-center justify-center transition-all hover-lift"

@@ -93,7 +93,7 @@ export const HeroSection = () => {
             {/* Social Links */}
             <div className="flex items-center gap-6 pt-4 animate-slide-in" style={{ animationDelay: "0.5s" }}>
               <a
-                href="https://github.com/apoorvmishra14"
+                href="https://github.com/ApoorvMishra1402"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
@@ -103,7 +103,7 @@ export const HeroSection = () => {
                 <span className="text-sm font-mono hidden sm:inline">GitHub</span>
               </a>
               <a
-                href="https://linkedin.com/in/ApoorvMishra1402"
+                href="https://linkedin.com/in/ApoorvMishra1402/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-2 text-muted-foreground hover:text-secondary transition-colors"
