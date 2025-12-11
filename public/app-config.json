@@ -13,6 +13,7 @@
     "publicKey": "uZ3xrdSJ5Tos3tuS5"
   },
   "unsplash": {
-    "accessKey": "GrhhxoGXkzoAAXhl0NkQvvEOUFjyN879X3GdvpbeBMc"
-  }
+    "accessKey": "YOUR_UNSPLASH_ACCESS_KEY"
+  },
+  "adminUid": "YOUR_ADMIN_UID"
 }

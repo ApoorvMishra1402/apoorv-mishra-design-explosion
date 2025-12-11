@@ -13,6 +13,7 @@ type BlogCard = {
   readTime?: string;
   tags: string[];
   color?: string;
+  active?: boolean;
 };
 
 const formatDate = (dateStr: string) => {
@@ -44,9 +45,10 @@ export const BlogSection = () => {
             readTime: data.readTime || "",
             tags: data.tags || [],
             color: data.color || "primary",
+            active: data.active !== false,
           };
         });
-        setPosts(list);
+        setPosts(list.filter((p) => p.active !== false));
       } catch (_) {
         setPosts([]);
       }

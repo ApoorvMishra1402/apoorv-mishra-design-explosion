@@ -10,8 +10,11 @@ import { CustomCursor } from "@/components/CustomCursor";
 import { Helmet } from "react-helmet";
 import { useEffect } from "react";
 import { trackPageView } from "@/lib/analytics";
+// removed admin-only messages from home; messages now live in Admin page
 
 const Index = () => {
+  
+
   useEffect(() => {
     trackPageView("home");
   }, []);

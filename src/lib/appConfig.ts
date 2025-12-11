@@ -29,6 +29,7 @@
 // }
 
 export type AppConfig = {
+  adminUid?: string;
   firebase: {
     apiKey: string;
     authDomain: string;
