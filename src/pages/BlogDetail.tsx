@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getDb } from "@/lib/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 type Blog = {
   title: string;
@@ -23,7 +23,26 @@ const BlogDetail = () => {
       if (!id) return;
       const db = await getDb();
       const snap = await getDoc(doc(db, "blogs", id));
-      if (snap.exists()) setBlog(snap.data() as Blog);
+      if (!snap.exists()) {
+        setLoading(false);
+        return;
+      }
+      const data = snap.data() as Blog;
+      const imgSnaps = await getDocs(collection(db, "blogs", id, "images"));
+      const imgs = imgSnaps.docs
+        .map((d) => d.data() as any)
+        .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+      const parser = new DOMParser();
+      const docEl = parser.parseFromString(data.content || "", "text/html");
+      let idx = 0;
+      Array.from(docEl.body.querySelectorAll("img[data-image-index]"))
+        .forEach((el) => {
+          const info = imgs[idx++];
+          if (info?.dataUrl) (el as HTMLImageElement).src = info.dataUrl;
+          el.removeAttribute("data-image-index");
+        });
+      const html = docEl.body.innerHTML;
+      setBlog({ ...data, content: html });
       setLoading(false);
     })();
   }, [id]);

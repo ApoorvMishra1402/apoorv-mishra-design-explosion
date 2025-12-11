@@ -38,10 +38,27 @@ const Admin = () => {
     });
   };
 
-  const fileToDataUrl = (file: File) =>
+  const compressFileToDataUrl = (file: File, maxW = 1024, maxH = 768, quality = 0.7) =>
     new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const ratio = Math.min(maxW / img.width, maxH / img.height, 1);
+          const w = Math.round(img.width * ratio);
+          const h = Math.round(img.height * ratio);
+          const canvas = document.createElement("canvas");
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return reject(new Error("canvas"));
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL("image/jpeg", quality);
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = reader.result as string;
+      };
       reader.onerror = reject;
       reader.readAsDataURL(file);
     });
@@ -61,20 +78,26 @@ const Admin = () => {
     refreshBlogs();
   }, []);
 
-  const htmlFromBlocks = (bs: Block[]) =>
-    bs
+  const serializeBlocks = (bs: Block[]) => {
+    const images: string[] = [];
+    const html = bs
       .map((b) => {
         if (b.type === "heading") return `<h2>${(b as any).text}</h2>`;
         if (b.type === "paragraph") return `<p>${(b as any).text}</p>`;
         if (b.type === "quote") return `<blockquote>${(b as any).text}</blockquote>`;
-        if (b.type === "image") return `<img src="${(b as any).url}" alt="" />`;
+        if (b.type === "image") {
+          const idx = images.push((b as any).url) - 1;
+          return `<img data-image-index="${idx}" alt="" />`;
+        }
         return "";
       })
       .join("\n");
+    return { html, images };
+  };
 
   const handleCreate = async () => {
     const db = await getDb();
-    const html = htmlFromBlocks(blocks);
+    const { html, images } = serializeBlocks(blocks);
     const docRef = await addDoc(collection(db, "blogs"), {
       title,
       excerpt,
@@ -85,6 +108,11 @@ const Admin = () => {
       color,
       active: true,
     });
+    if (images.length) {
+      await Promise.all(
+        images.map((dataUrl, index) => addDoc(collection(db, "blogs", docRef.id, "images"), { index, dataUrl })),
+      );
+    }
     setTitle("");
     setExcerpt("");
     setBlocks([{ type: "heading", text: "" }, { type: "paragraph", text: "" }]);
@@ -102,7 +130,10 @@ const Admin = () => {
       if (tag === "h2") blocks.push({ type: "heading", text: el.textContent || "" });
       else if (tag === "p") blocks.push({ type: "paragraph", text: el.textContent || "" });
       else if (tag === "blockquote") blocks.push({ type: "quote", text: el.textContent || "" });
-      else if (tag === "img") blocks.push({ type: "image", url: (el as HTMLImageElement).src });
+      else if (tag === "img") {
+        const idxAttr = (el as HTMLElement).getAttribute("data-image-index");
+        if (idxAttr != null) blocks.push({ type: "image", url: "" });
+      }
     });
     return blocks;
   };
@@ -119,14 +150,22 @@ const Admin = () => {
     setColor(data.color || "primary");
     setDate(data.date || new Date().toISOString().slice(0, 10));
     setTags(Array.isArray(data.tags) ? data.tags.join(", ") : "");
-    setBlocks(parseHtmlToBlocks(data.content || ""));
+    const bs = parseHtmlToBlocks(data.content || "");
+    const imgSnaps = await getDocs(collection(db, "blogs", id, "images"));
+    const images = imgSnaps.docs
+      .map((d) => d.data() as any)
+      .sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
+    let imgIdx = 0;
+    setBlocks(
+      bs.map((b) => (b.type === "image" ? { type: "image", url: images[imgIdx++]?.dataUrl || "" } : b)),
+    );
     setEditingId(id);
   };
 
   const saveEdit = async () => {
     if (!editingId) return;
     const db = await getDb();
-    const html = htmlFromBlocks(blocks);
+    const { html, images } = serializeBlocks(blocks);
     await updateDoc(doc(db, "blogs", editingId), {
       title,
       excerpt,
@@ -135,6 +174,13 @@ const Admin = () => {
       date,
       color,
     });
+    const existing = await getDocs(collection(db, "blogs", editingId, "images"));
+    await Promise.all(existing.docs.map((d) => deleteDoc(d.ref)));
+    if (images.length) {
+      await Promise.all(
+        images.map((dataUrl, index) => addDoc(collection(db, "blogs", editingId, "images"), { index, dataUrl })),
+      );
+    }
     setEditingId(null);
     refreshBlogs();
   };
@@ -182,7 +228,7 @@ const Admin = () => {
               <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
-                const url = await fileToDataUrl(file);
+                const url = await compressFileToDataUrl(file);
                 setBlocks((b) => [...b, { type: "image", url }]);
               }} />
               <span className="px-3 py-2 border rounded">Add Image</span>
